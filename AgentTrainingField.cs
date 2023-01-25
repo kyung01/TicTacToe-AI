@@ -20,10 +20,12 @@ public class AgentTrainingField
 	{
 
 
+		Console.WriteLine("Train " + agents.Count);
 		DebugText.cont = "";
 
-		for (int i = 0; i < agents.Count; i++)
+		for (int i = agents.Count-1; i >=0; i--)
 		{
+			//Console.WriteLine("Testing agent " + i);
 			var agent = agents[i];
 			agent.Score = 0;
 			agent.GetReady();
@@ -35,48 +37,75 @@ public class AgentTrainingField
 				agents.RemoveAt(i);
 			}
 		}
+		if (agents.Count < 3)
+		{
+			for(int i = agents.Count; i < 3; i++)
+			{
+
+				agents.Add(MainProgram.GetAgent());
+			}
+		}
+
 		agents.Sort((emp1, emp2) => emp2.Score.CompareTo(emp1.Score));
 		Console.WriteLine("Best score was " + agents[0].Score);
-		if (agents[0].Score == 3)
+		if (agents[0].Score == 10)
 		{
 
 			Console.WriteLine("Best agent created");
-			Isfinished = true;
-			return;
+			//Isfinished = true;
+			//return;
 		}
+
 
 		if (agents.Count > 3)
 		{
 			agents.RemoveRange(3, agents.Count - 3);
 
 		}
-		for (int i = 0; i < 7; i++)
+		//Console.WriteLine("Adding mutated agents from the best set of candidates");
+		for (int i = agents.Count; i < 30; i++)
 		{
+			//Console.WriteLine((1+i) + "/10");
 			var newAgent = (Agent)agents[rand.Next(0, agents.Count)].Clone();
 			agents.Add(newAgent);
 
-			int modify = rand.Next(0, 3);
-			Console.WriteLine("Cloning at " + i + " modifiying " + modify);
+			int modify = rand.Next(0, 6);
+			//Console.WriteLine("Modifying with option { " + modify + "}  " );
 			switch (modify)
 			{
 				case 0:
-					newAgent.brain.mutateAddNewConnection();
-					newAgent.brain.mutateAddNewConnection();
-					newAgent.brain.mutateAddNewConnection();
-					newAgent.brain.mutateAddNewConnection();
-					newAgent.brain.mutateAddNewConnection();
-					newAgent.brain.mutateAddNewConnection();
-					newAgent.brain.mutateAddNewConnection();
 					newAgent.brain.mutateAddNewConnection();
 					break;
 				case 1:
 					newAgent.brain.mutateAddNewNeuron();
 					break;
 				case 2:
-					newAgent.brain.mutateRemoveANeuron();
+					newAgent.brain.mutateRemoveNeuron();
+					break;
+				case 4:
+					newAgent.brain.mutateRemoveNeuron();
+					newAgent.brain.mutateAddNewNeuron();
+					newAgent.brain.mutateAddNewConnection();
+					break;
+				case 5:
+					newAgent.brain.mutateAddNewNeuron();
+					newAgent.brain.mutateAddNewConnection();
+					break;
+				case 3:
+					newAgent.brain.mutateAddNewConnection();
+					newAgent.brain.mutateAddNewConnection();
+					newAgent.brain.mutateAddNewConnection();
+					newAgent.brain.mutateAddNewConnection();
+					newAgent.brain.mutateAddNewConnection();
+					newAgent.brain.mutateAddNewConnection();
+					newAgent.brain.mutateAddNewConnection();
+					newAgent.brain.mutateAddNewConnection();
+					newAgent.brain.mutateAddNewConnection();
+					newAgent.brain.mutateAddNewConnection();
 					break;
 			}
 		}
+		Console.WriteLine("Train Reached end");
 		//Debug.Log("Ending a thread");
 	}
 

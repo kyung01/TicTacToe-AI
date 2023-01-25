@@ -18,19 +18,26 @@ public enum RSP { ROCK,SCISSOR,PAPER}
 [Serializable]
 public class Agent
 {
-	public Object Clone()
+	//public Object Clone()
+	//{
+	//	using (MemoryStream stream = new MemoryStream())
+	//	{
+	//		if (this.GetType().IsSerializable)
+	//		{
+	//			BinaryFormatter fmt = new BinaryFormatter();
+	//			fmt.Serialize(stream, this);
+	//			stream.Position = 0;
+	//			return fmt.Deserialize(stream);
+	//		}
+	//		return null;
+	//	}
+	//}
+
+	public Agent Clone()
 	{
-		using (MemoryStream stream = new MemoryStream())
-		{
-			if (this.GetType().IsSerializable)
-			{
-				BinaryFormatter fmt = new BinaryFormatter();
-				fmt.Serialize(stream, this);
-				stream.Position = 0;
-				return fmt.Deserialize(stream);
-			}
-			return null;
-		}
+		var newAgent = new Agent();
+		newAgent.brain = this.brain.Clone();
+		return newAgent;
 	}
 	public Brain brain = new Brain();
 
@@ -39,7 +46,7 @@ public class Agent
 
 	public void GetReady()
 	{
-		brain.StartThinking();
+		brain.StartThinkingNew();
 	}
 
 	

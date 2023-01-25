@@ -5,15 +5,15 @@ using System.Text;
 using System.Threading.Tasks;
 
 [System.Serializable]
-public class NeuronBridge
+public struct NeuronBridge
 {
 	public bool condition;
 	public bool sent;
-	public Neuron target;
+	public int targetIndex;
 
-	public NeuronBridge(Neuron target, bool condition, bool sent)
+	public NeuronBridge(int target, bool condition, bool sent)
 	{
-		this.target = target;
+		this.targetIndex = target;
 		this.condition = condition;
 		this.sent = sent;
 	}
@@ -21,7 +21,8 @@ public class NeuronBridge
 	public bool activate(Brain brain, bool signal, int depth)
 	{
 		if (signal != condition) return true;
-		return target.activate(brain,sent, depth + 1);
+		return brain.ActivateNeuronAt(targetIndex, sent, depth + 1);
+		//return target.activate(brain,sent, depth + 1);
 
 	}
 }

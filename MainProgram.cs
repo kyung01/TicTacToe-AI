@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 public class MainProgram
 {
+	static System.Random rand = new Random();
 
 	static List<Agent> agents = new List<Agent>();
 	static Thread thread;
@@ -24,18 +25,10 @@ public class MainProgram
 	static void Init()
 	{
 		agents = new List<Agent>();
+		animalDataManager = new AnimalDataManager();
 		for (int i = 0; i < 10; i++)
 		{
-			var agent = new Agent();
-			//Three decisions
-			var brain = agent.brain;
-			brain.AddInput();
-			brain.AddInput();
-			brain.AddInput();
-
-			brain.AddDecision();
-			brain.AddDecision();
-			brain.AddDecision();
+			var agent = GetAgent();
 
 
 			agents.Add(agent);
@@ -52,6 +45,7 @@ public class MainProgram
 			Console.WriteLine("Thread running...");
 			while (thread.IsAlive)
 			{
+				//Console.WriteLine("IsAlive");
 
 			}
 			if (AgentTrainingField.Isfinished)
@@ -69,6 +63,27 @@ public class MainProgram
 
 	}
 
+	public static Agent GetAgent()
+	{
+		var agent = new Agent();
+		//Three decisions
+		var brain = agent.brain;
+		for (int i = 0; i < 93323 * 8; i++)
+		{
+			brain.AddInput();
+		}
+
+		brain.AddDecision(); //cats
+		brain.AddDecision(); //dogs
+
+		for (int i = 0; i < 93323 * 8; i++)
+		{
+			brain.mutateAddNewConnection();
+		}
+
+		return agent;
+	}
+
 	public struct TestSheet
 	{
 		public int input;
@@ -78,22 +93,41 @@ public class MainProgram
 	static TestSheet test00 = new TestSheet() { input = 0, correctOutput = 1 };
 	static TestSheet test01 = new TestSheet() { input = 1, correctOutput = 2 };
 	static TestSheet test02 = new TestSheet() { input = 2, correctOutput = 0 };
+	static AnimalDataManager animalDataManager;
 	private static bool agentCourse(Agent agent)
 	{
-		List<TestSheet> tests = new List<TestSheet>() { test00, test01, test02 };
-		foreach (var test in tests)
+		for(int testingCount = 0; testingCount < 10; testingCount++)
 		{
-			agent.brain.StartThinking();
-
-			if (!agent.brain.ActivateInputNode(test.input)) return false;
+			AnimalData data = (rand.Next(0, 2) == 0) ? animalDataManager.GetRandomCat() : animalDataManager.GetRandomDog();
+			agent.brain.StartThinkingNew();
+			//Console.WriteLine(data.binary.Length);
+			for (int i = 0; i < data.binary.Length; i++)
+			{
+				if (data.binary[i] == '1')
+				{
+					agent.brain.ActivateInputNode(i);
+				}
+				else
+				{
+					agent.brain.ActivateInputNode(i, false);
+				}
+			}
 			var decision = agent.brain.Decide();
-			//agent.brain.Print();
-			if (decision == test.correctOutput)
-				agent.Score++;
+
+			bool solved = true;
+			if (data.type == Animal.CAT && decision == 0) agent.Score++;
+			else if (data.type == Animal.DOG && decision == 1) agent.Score++;
+			else solved = false;
+			
+			if (!solved)
+			{
+				break;
+
+			}
+
 		}
+
 		return true;
-
-
 
 	}
 }
